@@ -37,6 +37,9 @@ class GestorIncidencias {
         break;
       }
     }
+    // BUG_01
+    // debe de guardar otra vez todos los datos del json
+    await datos.guardar(incidencias);
   }
 
   Future<void> crear(String titulo, String descripcion, String cliente,
