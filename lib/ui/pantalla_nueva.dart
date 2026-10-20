@@ -16,6 +16,7 @@ class _PantallaNuevaState extends State<PantallaNueva> {
   final cliente = TextEditingController();
   String categoria = 'Software';
   bool ocupado = false;
+  String prioridad = 'Media';
 
   @override
   void dispose() {
@@ -30,7 +31,8 @@ class _PantallaNuevaState extends State<PantallaNueva> {
     setState(() => ocupado = true);
     try {
       await widget.gestor.crear(
-        titulo.text.trim(), descripcion.text.trim(), cliente.text.trim(), categoria,
+        // se agrega la prioridad a los argumentos de la funcion
+        titulo.text.trim(), descripcion.text.trim(), prioridad, cliente.text.trim(), categoria
       );
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
@@ -41,6 +43,9 @@ class _PantallaNuevaState extends State<PantallaNueva> {
       if (mounted) setState(() => ocupado = false);
     }
   }
+
+
+  bool guardando = false;
 
   Widget campo(String etiqueta, TextEditingController control, {int lineas = 1}) {
     return Padding(
@@ -70,6 +75,17 @@ class _PantallaNuevaState extends State<PantallaNueva> {
                 const SizedBox(height: 15),
                 campo('Título', titulo),
                 campo('Descripción', descripcion, lineas: 4),
+                // Para replicar la funcionalidad del widget de prioridad
+                // y se adapta para  esta parte ya que al estar creandose solo debe de tomar el valor correspondiente
+                DropdownButtonFormField<String>(
+                      value: prioridad,
+                      decoration: const InputDecoration(labelText: 'Prioridad', border: OutlineInputBorder()),
+                      items: ['Baja', 'Media', 'Alta']
+                          .map((v) => DropdownMenuItem(value: v, child: Text(v)))
+                          .toList(),
+                      onChanged: guardando ? null : (v) => setState(() => prioridad = v ?? 'Media'),
+                    ),
+                const SizedBox(height: 24),
                 campo('Cliente', cliente),
                 DropdownButtonFormField<String>(
                   value: categoria,

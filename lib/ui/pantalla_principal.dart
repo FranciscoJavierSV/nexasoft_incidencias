@@ -185,7 +185,8 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text('${item.id}  ·  ${item.cliente}'),
+                                              // Agregar la prioridad en el subtitulo de las targetas y ajustar diseno
+                                              Text('id: ${item.id}  |  cliente: ${item.cliente}  |  prioridad: ${item.prioridad}'),
                                               const SizedBox(height: 6),
                                               Text(item.estado, style: TextStyle(
                                                 color: colorEstado(item.estado), fontWeight: FontWeight.bold,
