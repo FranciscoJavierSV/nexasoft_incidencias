@@ -16,11 +16,23 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
   bool cargando = true;
   String? error;
   String busqueda = '';
+  // Se Declararon 2 variables para el filtro
+  String prioridad = '';
+  String estado = '';
+  bool guardando = false;
 
   @override
   void initState() {
     super.initState();
     cargar();
+  }
+
+  // controlador del texto del buscador
+  final _busquedaController = TextEditingController();
+  @override
+  void dispose() {
+    _busquedaController.dispose();
+    super.dispose();
   }
 
   Future<void> cargar() async {
@@ -84,7 +96,8 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
 
   @override
   Widget build(BuildContext context) {
-    final items = g.buscar(busqueda);
+    // Se agregan al buscador 2 nuevas variables para el filtro
+    final items = g.buscar(busqueda,prioridad,estado);
     return Scaffold(
       appBar: AppBar(
         title: const Text('NexaSoft | Incidencias'),
@@ -151,6 +164,8 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 5),
                           child: TextField(
+                            // se anade el controlador
+                            controller: _busquedaController,
                             decoration: const InputDecoration(
                               labelText: 'Buscar incidencias',
                               hintText: 'Ejemplo: WiFi, correo, pantalla',
@@ -167,6 +182,47 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
                             child: Text('${items.length} registros', style: const TextStyle(color: Colors.black54)),
                           ),
                         ),
+                        // Se agrego un padding para crear los 2 dropdown button con los cambios para los filtros y el boton de reset 
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 14, 12, 8),
+                          child: Row(children: [
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                value: prioridad,
+                                decoration: const InputDecoration(labelText: 'Prioridad', border: OutlineInputBorder()),
+                                items: ['', 'Baja', 'Media', 'Alta']
+                                    .map((v) => DropdownMenuItem(value: v, child: Text(v.isEmpty ? 'Todas' : v)))
+                                    .toList(),
+                                onChanged: guardando ? null : (v) => setState(() => prioridad = v ?? ''),
+                              ),
+                            ),
+                            const SizedBox(width: 10), // separación entre los dos
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                value: estado,
+                                decoration: const InputDecoration(labelText: 'Estado', border: OutlineInputBorder()),
+                                items: ['', 'Pendiente', 'En proceso', 'Resuelta']
+                                    .map((v) => DropdownMenuItem(value: v, child: Text(v.isEmpty ? 'Todas' : v)))
+                                    .toList(),
+                                onChanged: guardando ? null : (v) => setState(() => estado = v ?? ''),
+                              ),
+                            ),
+                            const SizedBox(width: 10), // separación entre los dos
+                            ButtonTheme(
+                              minWidth: 40,
+                              child: FilledButton(
+                                onPressed: guardando ? null : () => setState(() {
+                                          // se limpian las variables
+                                          prioridad = ''; estado = ''; busqueda = ''; _busquedaController.clear();
+                                        }
+                                ),
+                                child: const Icon(Icons.restart_alt),
+                              ),
+                            ),
+                          ]),
+                        ),
+
+
                         Expanded(
                           child: items.isEmpty
                               ? const Center(child: Text('No se encontraron incidencias'))

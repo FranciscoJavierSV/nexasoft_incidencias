@@ -12,10 +12,16 @@ class GestorIncidencias {
         incidencias.where((x) => x.estado == 'Pendiente').length;
   }
 
-  List<Incidencia> buscar(String texto) {
-    if (texto.trim().isEmpty) return incidencias;
-    return incidencias.where((x) => x.titulo.toLowerCase().trim().contains(texto.toLowerCase().trim()) 
-            || x.descripcion.toLowerCase().trim().contains(texto.toLowerCase().trim())).toList();
+  // se modifica la funcion y se le agregan los parametros y validaciones
+  List<Incidencia> buscar(String texto,String prioridad,String estado) {
+    if (texto.trim().isEmpty && prioridad.isEmpty && estado.isEmpty) return incidencias;
+    return incidencias.where(
+      (x) => x.titulo.toLowerCase().trim().contains(texto.toLowerCase().trim()) 
+          || x.descripcion.toLowerCase().trim().contains(texto.toLowerCase().trim()))
+          // Para completar el filtro se encadenan los demas where junto a el texto del filtro
+          .where((x) => x.prioridad.toLowerCase().trim().contains(prioridad.toLowerCase().trim()))
+          .where((x) => x.estado.toLowerCase().trim().contains(estado.toLowerCase().trim()))
+          .toList();
   }
 
   Incidencia? porId(String id) {
